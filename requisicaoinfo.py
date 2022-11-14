@@ -1,8 +1,6 @@
 import os
 os.system ("cls")
-
-lista_cadastro = []
-lista_dados = []
+from pycep_correios import get_address_from_cep, WebService
 
 cadastro = {"Email": ""}
 
@@ -10,7 +8,7 @@ email = input("Digite seu email: ")
 
 cadastro["Email"] = email
 
-dados = {"Nome Completo": "",  "Telefone": "","Profissão": "", "Nacionalidade": "", "Data de Nascimento": "", "Gênero": "", "CPF": "", "RG": "", "Órgão Expedidor": "", "CEP": ""}
+dados = {"Nome Completo": "",  "Telefone": "","Profissão": "", "Nacionalidade": "", "Data de Nascimento": "", "Gênero": "", "CPF": "", "RG": "", "Órgão Expedidor": "", "Endereço": ""}
 
 nome_completo = input("Digite seu nome completo: ")
 telefone = input("Digite seu telefone: ")
@@ -20,7 +18,7 @@ data_nascimento = input("Digite sua Data de Nascimento: ")
 genero = input("Digite seu Gênero: ")
 cpf = input("Digite seu CPF: ")
 rg = input("Digite seu RG: ")
-orgao_exp = input("Digite o Órgão Expedidor")
+orgao_exp = input("Digite o Órgão Expedidor: ")
 cep = input("Digite o CEP: ")
 
 dados["Nome Completo"] = nome_completo
@@ -32,17 +30,58 @@ dados["Gênero"] = genero
 dados["CPF"] = cpf
 dados["RG"] = rg
 dados["Órgão Expedidor"] = orgao_exp
-dados["CEP"] = cep
+dados["Endereço"] = cep
+endereco = get_address_from_cep(cep, webservice=WebService.CORREIOS)
+endereco_comp={
+    'Rua': endereco['logradouro'],
+    'Numero': '',
+    'Complemento': '',
+    'Bairro': endereco['bairro'],
+    'Cidade': endereco['cidade'],
+    'Estado': endereco['uf'],
+    'País': 'Brasil'
+}
 
-lista_cadastro.append(cadastro)
+endereco_comp['Numero']= int(input("Digite o numero de sua residencia: "))
+complemento = input("Endereço possue complemento? ").lower()
+if complemento == 's':
+    endereco_comp['Complemento']=input("Digite o complemento:")
+elif complemento == 'n':
+    endereco_comp.pop('Complemento', None)
 
-for cadastro in lista_cadastro:
-    print(cadastro)
+for i in endereco_comp:
+    print(f'{i}: {endereco_comp[i]}')
+corrrecao =input('O endereço esta correto? ').lower()
+if corrrecao == 'n':
+    cep = input("Digite o CEP: ")
+    endereco = get_address_from_cep(cep, webservice=WebService.CORREIOS)
+    endereco_comp={
+        'Rua': endereco['logradouro'],
+        'Numero': '',
+        'Complemento': '',
+        'Bairro': endereco['bairro'],
+        'Cidade': endereco['cidade'],
+        'Estado': endereco['uf'],
+        'País': 'Brasil'
+    }
 
-lista_dados.append(dados)
+    endereco_comp['Numero']= int(input("Digite o numero de sua residencia: "))
+    complemento = input("Endereço possue complemento? ").lower()
+    if complemento == 's':
+        endereco_comp['Complemento']=input("Digite o complemento:")
+    elif complemento == 'n':
+        endereco_comp.pop('Complemento', None)
+    for i in endereco_comp:
+        print(f'{i}: {endereco_comp[i]}')
+cadastro['Endereço']=endereco_comp
 
-for dado in lista_dados:
-    print(dado)
+print('\n')
+for i in dados:
+    if i == 'Endereço':
+        for dado in endereco_comp:
+            print(f'{dado}: {endereco_comp[dado]}')
+    else:
+        print(f'{i}: {dados[i]}')
 
 escolha = input("Deseja editar algum dado? ")
 
@@ -78,12 +117,11 @@ if escolha == "sim":
     elif item_editar == "orgao expedidor":
         novo_orgao_exp = input("Digite o novo Órgão expedidor: ")
         dados["Órgão Expedidor"] = novo_orgao_exp
-    elif item_editar == "cep":
-        novo_cep = input("Digite o novo CEP: ")
-        dados["CEP"] = novo_cep
 
-for cadastro in lista_cadastro:
-    print(cadastro)
-
-for dado in lista_dados:
-    print(dado)
+print('\n')
+for i in dados:
+    if i == 'Endereço':
+        for dado in endereco_comp:
+            print(f'{dado}: {endereco_comp[dado]}')
+    else:
+        print(f'{i}: {dados[i]}')
