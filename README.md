@@ -1,4 +1,4 @@
-# CodigoBinho
+# Codigo Hotech
 Para rodar o codigo é necessario instalar 2 bibliotecas
 A pycep-correios e a qrcode
 Para instalr ambas so digitar no terminal:
